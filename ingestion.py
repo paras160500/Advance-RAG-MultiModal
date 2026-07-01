@@ -5,45 +5,69 @@ from opensearchpy import OpenSearch,helpers
 from helper import get_embedding,get_opensearch_client
 from unstructured.partition.pdf import partition_pdf
 from chunking import process_images_with_caption,process_tables_with_description,create_semantic_chunks
+import json 
+
 #---------------------------------------------------------------------------------
 #                                   Logic Functions
 #---------------------------------------------------------------------------------
-def create_index_if_not_exists(client : OpenSearch , index_name : str):
-    """
-        Create an index if the index is not available on the client
-        Args:
-            client : OpenSearch client
-            index_name : name of the index in string
-    """
-    if client.indices.exists(index=index_name):
-        # If index exists then delete it...
-        print(f"Index : {index_name} already exists.")
-        client.indices.delete(index = index_name)
 
-        # Creating mapping for index
+
+def create_index_if_not_exists(client, index_name):
+    """
+    Create an OpenSearch index if it does not exist.
+    If it already exists, delete and recreate it with the proper mapping.
+
+    Args:
+        client: OpenSearch client
+        index_name (str): Name of the index
+    """
+
+    try:
+        # Delete existing index so that we can apply new mappings
+        if client.indices.exists(index=index_name):
+            print(
+                f"Index '{index_name}' already exists. "
+                "Deleting it to recreate with proper mappings..."
+            )
+            client.indices.delete(index=index_name)
+
         mappings = {
-            "mappings" : {
-                "properties" : {
-                    "content" : {"type" : "text"},
-                    "content_type" : {"type" : "keyword"},
-                    "filename" : {"type" : "keyword"},
-                    "embedding" : {"type" : "dense_vector" , "dims" : 768}
+            "settings": {
+                "index": {
+                    "knn": True,
+                    "knn.space_type": "cosinesimil"
                 }
             },
-            "settings" : {
-                "index" : {
-                    "knn" : True,
-                    "knn.space_type" : "cosinesimilarity"
+            "mappings": {
+                "properties": {
+                    "content": {
+                        "type": "text"
+                    },
+                    "content_type": {
+                        "type": "keyword"
+                    },
+                    "filename": {
+                        "type": "keyword"
+                    },
+                    "embedding": {
+                        "type": "knn_vector",
+                        "dimension": 768
+                    }
                 }
             }
         }
 
-        try:
-            client.indices.create(index = index_name , body = mappings)
-            print(f"Index {index_name} created successfully.")
-        except Exception as e:
-            print("Error in creating index :- " , str(e))
-            raise
+        client.indices.create(
+            index=index_name,
+            body=mappings
+        )
+
+        print(f"Index '{index_name}' created successfully.")
+
+    except Exception as e:
+        print(f"Error creating index: {e}")
+        raise
+
 
 
 def prepare_chunks_for_ingestion(chunks):
@@ -146,7 +170,14 @@ if __name__ == "__main__":
         chunking_strategy=None
     )
 
-    processed_image = process_images_with_caption(raw_chunks=raw_chunks , use_gemini=True)
+    # processed_image = process_images_with_caption(raw_chunks=raw_chunks , use_gemini=True)
+
+    # You can use the above one...because my google api gave up so i have to use this way...ha ha ha 
+    with open("processed_images.json", "r", encoding="utf-8") as f:
+        processed_image = json.load(f)
+
+    if len(processed_image) > 0:
+        print("Processed data loaded successfull...")    
     
     processed_table = process_tables_with_description(raw_chunks=raw_chunks , use_gemini=False)
 

@@ -48,7 +48,7 @@ def get_opensearch_client(host,port):
 #                                   Checking code
 #---------------------------------------------------------------------------------
 
-if __name__ == "__main__":
-    # print(get_embedding("Paras Patel"))
+# if __name__ == "__main__":
+#     # print(get_embedding("Paras Patel"))
 
-    client = get_opensearch_client("localhost" , 9200)
+#     print(len(get_embedding("hello")))

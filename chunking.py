@@ -187,40 +187,40 @@ def create_semantic_chunks(text_chunks):
 #---------------------------------------------------------------------------------
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # File location
-    base_dir = "Files"
-    pdf_file = "research_paper.pdf"
-    pdf_file_path = f"{base_dir}/{pdf_file}"
+#     # File location
+#     base_dir = "Files"
+#     pdf_file = "research_paper.pdf"
+#     pdf_file_path = f"{base_dir}/{pdf_file}"
 
-    # raw_chunks = partition_pdf(
-    #     filename=pdf_file_path,
-    #     strategy="hi_res",
-    #     infer_table_structure=True,
-    #     extract_image_block_types=["Image" , "Figure" , "Table"],      # We want to extract image figure and table from pdf
-    #     extract_image_block_to_payload=True,
-    #     chunking_strategy=None
-    # )
+#     # raw_chunks = partition_pdf(
+#     #     filename=pdf_file_path,
+#     #     strategy="hi_res",
+#     #     infer_table_structure=True,
+#     #     extract_image_block_types=["Image" , "Figure" , "Table"],      # We want to extract image figure and table from pdf
+#     #     extract_image_block_to_payload=True,
+#     #     chunking_strategy=None
+#     # )
 
-    # processed_images = process_images_with_caption(raw_chunks=raw_chunks,use_gemini=True)
-    # with open("processed_images.json", "w") as f:
-    #     json.dump(processed_images, f, indent=4)
+#     # processed_images = process_images_with_caption(raw_chunks=raw_chunks,use_gemini=True)
+#     # with open("processed_images.json", "w") as f:
+#     #     json.dump(processed_images, f, indent=4)
 
-    # processed_tables = process_tables_with_description(raw_chunks=raw_chunks,use_gemini=False)
-    # with open("processed_tables.json" , "w") as f:
-    #     json.dump(processed_tables , f , indent=4)
+#     # processed_tables = process_tables_with_description(raw_chunks=raw_chunks,use_gemini=False)
+#     # with open("processed_tables.json" , "w") as f:
+#     #     json.dump(processed_tables , f , indent=4)
 
 
-    text_chunks = partition_pdf(
-        filename=pdf_file_path,
-        strategy="hi_res",
-        chunking_strategy="by_title",
-        max_characters = 2000,
-        combine_text_under_n_chars = 500,
-        new_after_n_chars = 1500
-    )
+#     text_chunks = partition_pdf(
+#         filename=pdf_file_path,
+#         strategy="hi_res",
+#         chunking_strategy="by_title",
+#         max_characters = 2000,
+#         combine_text_under_n_chars = 500,
+#         new_after_n_chars = 1500
+#     )
 
-    semantic_chunks = create_semantic_chunks(text_chunks)
-    for chunk in semantic_chunks:
-        print(chunk)
+#     semantic_chunks = create_semantic_chunks(text_chunks)
+#     for chunk in semantic_chunks:
+#         print(chunk)
